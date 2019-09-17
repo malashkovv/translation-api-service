@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: translation-api-pod
+  labels:
+    app: translation-api-pod
+spec:
+  containers:
+    - image: vmalashkov/translation-api-service
+      name: translation-api-pod
+      ports:
+        - containerPort: 8080
