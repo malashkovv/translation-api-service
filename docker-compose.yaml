@@ -6,3 +6,9 @@ services:
       dockerfile: ./translation-api/Dockerfile
     ports:
       - 8080:8080
+  aws:
+    build:
+      context: .
+      dockerfile: ./infrastructure/Dockerfile
+    volumes:
+      - ./infrastructure:/home/infrastructure
