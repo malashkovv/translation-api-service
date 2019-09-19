@@ -1,17 +1,13 @@
-import requests
-
-from aiohttp import web
+from aiohttp import web, ClientSession
 from aiohttp_swagger import setup_swagger
-from translate import translator
 
 
-def translate(text):
-    try:
-        return translator("en", "ru", text)[0][0][0]
-    except requests.exceptions.HTTPError as http_error:
-        if http_error.response.status_code == 429:
-            raise web.HTTPTooManyRequests(text="Too many requests to Google API translation service.")
-        raise
+async def translate(text):
+    req = "https://translate.google.com:443/translate_a/single?client=a&ie=utf-8&oe=utf-8&dt=t&sl=en&tl=ru&q={text}"
+    async with ClientSession() as sess:
+        async with sess.get(req.format(text=text)) as resp:
+            text = await resp.json()
+            return text[0][0][0]
 
 
 async def handle(request):
