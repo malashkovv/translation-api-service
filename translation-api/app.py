@@ -1,11 +1,18 @@
-from aiohttp import web, ClientSession
+import aiohttp
+
+from aiohttp import web
 from aiohttp_swagger import setup_swagger
 
 
 async def translate(text):
     req = "https://translate.google.com:443/translate_a/single?client=a&ie=utf-8&oe=utf-8&dt=t&sl=en&tl=ru&q={text}"
-    async with ClientSession() as sess:
+    async with aiohttp.ClientSession() as sess:
         async with sess.get(req.format(text=text)) as resp:
+            if resp.status != 200:
+                if resp.status == 429:
+                    raise web.HTTPTooManyRequests(text="Too many requests for Google API.")
+                else:
+                    raise web.HTTPServiceUnavailable(text=f"Google API returned code: {resp.status}")
             text = await resp.json()
             return text[0][0][0]
 
@@ -34,13 +41,13 @@ async def handle(request):
             description: Too many requests (Google API has restriction on how many calls you can do.)
     """
     text = request.rel_url.query.get('text', "")
-    translated_text = translate(text) if text else ""
-    return web.json_response({"translation": translated_text})
+    translated_text = await translate(text) if text else ""
+    return aiohttp.web.json_response({"translation": translated_text})
 
 
 def init_func(argv=None):
-    app = web.Application()
-    app.add_routes([web.get('/translate', handle)])
+    app = aiohttp.web.Application()
+    app.add_routes([aiohttp.web.get('/translate', handle)])
     setup_swagger(app)
     return app
 
