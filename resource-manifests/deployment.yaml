@@ -21,6 +21,6 @@ spec:
       containers:
         - image: vmalashkov/translation-api-service
           imagePullPolicy: Always
-          name: sa-frontend
+          name: translation-api
           ports:
-            - containerPort: 8081
+            - containerPort: 8080
