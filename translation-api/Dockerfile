@@ -4,7 +4,7 @@ ENV PYTHONPATH /usr/src/app
 
 WORKDIR /usr/src/app/
 
-RUN pip install py-translate aiohttp requests aiohttp-swagger
+RUN pip install aiohttp aiohttp-swagger
 
 COPY ./translation-api ./translation-api
 
