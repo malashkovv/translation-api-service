@@ -1,12 +1,29 @@
+import os
 import aiohttp
 
 from aiohttp import web
 from aiohttp_swagger import setup_swagger
+from aws_xray_sdk.ext.aiohttp.client import aws_xray_trace_config
+
+from aws_xray_sdk.ext.aiohttp.middleware import middleware as xray_middleware
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core.async_context import AsyncContext
+
+
+def is_xray_on():
+    return os.environ.get('XRAY', 'false') == 'true'
+
+
+def create_session():
+    if is_xray_on():
+        trace_config = aws_xray_trace_config()
+        return aiohttp.ClientSession(trace_configs=[trace_config])
+    return aiohttp.ClientSession()
 
 
 async def translate(text):
     req = "https://translate.google.com:443/translate_a/single?client=a&ie=utf-8&oe=utf-8&dt=t&sl=en&tl=ru&q={text}"
-    async with aiohttp.ClientSession() as sess:
+    async with create_session() as sess:
         async with sess.get(req.format(text=text)) as resp:
             if resp.status != 200:
                 if resp.status == 429:
@@ -46,7 +63,12 @@ async def handle(request):
 
 
 def init_func(argv=None):
-    app = aiohttp.web.Application()
+    middlewares = list()
+    if is_xray_on():
+        print("XRAY on")
+        xray_recorder.configure(service='fallback_name', context=AsyncContext())
+        middlewares.append(xray_middleware)
+    app = aiohttp.web.Application(middlewares=middlewares)
     app.add_routes([aiohttp.web.get('/translate', handle)])
     setup_swagger(app)
     return app
