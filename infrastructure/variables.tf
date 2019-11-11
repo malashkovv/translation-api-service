@@ -19,10 +19,6 @@ variable "worker_cluster_desired_capacity" {
   type = "string"
 }
 
-variable "worker_cluster_min_size" {
-  type = "string"
-}
-
 variable "worker_cluster_max_size" {
   type = "string"
 }
