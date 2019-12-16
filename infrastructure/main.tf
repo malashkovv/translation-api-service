@@ -16,12 +16,17 @@ module "vpc-translation-api" {
   }
 }
 
+resource "aws_iam_role_policy_attachment" "worker-policy-attachment-AWSXRayDaemonWriteAccess" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+  role       = module.eks-translation-api.worker_iam_role_name
+}
+
 module "eks-translation-api" {
-  source          = "terraform-aws-modules/eks/aws"
-  cluster_name    = var.cluster_name
-  subnets         = module.vpc-translation-api.public_subnets
-  vpc_id          = module.vpc-translation-api.vpc_id
-  manage_aws_auth = true
+  source                      = "terraform-aws-modules/eks/aws"
+  cluster_name                = var.cluster_name
+  subnets                     = module.vpc-translation-api.public_subnets
+  vpc_id                      = module.vpc-translation-api.vpc_id
+  manage_aws_auth             = true
 
   worker_groups = [
     {

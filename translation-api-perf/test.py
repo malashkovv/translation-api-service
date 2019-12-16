@@ -1,4 +1,5 @@
-from locust import HttpLocust, TaskSet, task
+from locust import TaskSet, task
+from locust.contrib.fasthttp import FastHttpLocust
 
 
 class UserBehavior(TaskSet):
@@ -8,7 +9,7 @@ class UserBehavior(TaskSet):
         self.client.get("/translate?text=hello")
 
 
-class WebsiteUser(HttpLocust):
+class WebsiteUser(FastHttpLocust):
     task_set = UserBehavior
-    min_wait = 5000
-    max_wait = 9000
+    min_wait = 1000
+    max_wait = 1000

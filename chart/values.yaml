@@ -1,0 +1,9 @@
+replicaCount: 2
+
+image:
+  repository: vmalashkov/translation-api-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+config:
+  xray: true

@@ -1,5 +1,7 @@
 import os
 import aiohttp
+import uvloop
+import asyncio
 
 from aiohttp import web
 from aiohttp_swagger import setup_swagger
@@ -8,6 +10,9 @@ from aws_xray_sdk.ext.aiohttp.client import aws_xray_trace_config
 from aws_xray_sdk.ext.aiohttp.middleware import middleware as xray_middleware
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core.async_context import AsyncContext
+
+
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 def is_xray_on():
@@ -21,7 +26,7 @@ def create_session():
     return aiohttp.ClientSession()
 
 
-async def translate(text):
+async def real_translate(text):
     req = "https://translate.google.com:443/translate_a/single?client=a&ie=utf-8&oe=utf-8&dt=t&sl=en&tl=ru&q={text}"
     async with create_session() as sess:
         async with sess.get(req.format(text=text)) as resp:
@@ -32,6 +37,13 @@ async def translate(text):
                     raise web.HTTPServiceUnavailable(text=f"Google API returned code: {resp.status}")
             text = await resp.json()
             return text[0][0][0]
+
+
+async def fake_translate(text):
+    return text[::-1]
+
+
+translate = fake_translate
 
 
 async def handle(request):
@@ -62,11 +74,15 @@ async def handle(request):
     return aiohttp.web.json_response({"translation": translated_text})
 
 
-def init_func(argv=None):
+async def init_func(argv=None):
     middlewares = list()
     if is_xray_on():
-        print("XRAY on")
-        xray_recorder.configure(service='fallback_name', context=AsyncContext())
+        xray_recorder.configure(
+            service="translation-api",
+            sampling=False,
+            context=AsyncContext(),
+            daemon_address="xray:2000"
+        )
         middlewares.append(xray_middleware)
     app = aiohttp.web.Application(middlewares=middlewares)
     app.add_routes([aiohttp.web.get('/translate', handle)])

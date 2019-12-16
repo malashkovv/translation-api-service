@@ -4,10 +4,10 @@ ENV PYTHONPATH /usr/src/app
 
 WORKDIR /usr/src/app/
 
-RUN pip install aiohttp aiohttp-swagger aws-xray-sdk
+RUN pip install aiohttp aiohttp-swagger aws-xray-sdk gunicorn uvloop
 
 COPY ./translation-api ./translation-api
 
 EXPOSE 8080
 
-CMD python -m aiohttp.web -H 0.0.0.0 -P 8080 translation-api.app:init_func
+CMD ["gunicorn", "translation-api.app:init_func", "-c", "/usr/src/app/translation-api/gunicorn_conf.py"]
