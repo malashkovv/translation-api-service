@@ -81,7 +81,7 @@ async def init_func(argv=None):
             service="translation-api",
             sampling=False,
             context=AsyncContext(),
-            daemon_address="xray:2000"
+            daemon_address="xray-aws-xray:2000"
         )
         middlewares.append(xray_middleware)
     app = aiohttp.web.Application(middlewares=middlewares)
