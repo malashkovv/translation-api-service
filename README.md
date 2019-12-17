@@ -106,13 +106,11 @@ helm upgrade translation-api ./chart --install --force --reset-values --set imag
 
 Delete charts
 ```bash
-helm delete --purge locust
-helm delete --purge translation-api
+helm ls --all --short | xargs -L1 helm delete --purge
 ```
 
 Destroy cluster
 ```bash
-helm ls --all --short | xargs -L1 helm delete --purge
 terraform destroy
 ```
 
