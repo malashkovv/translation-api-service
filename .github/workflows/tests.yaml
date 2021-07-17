@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests
         shell: bash -l {0}
-        run: pytest --cov-report=xml translation-api/tests/
+        run: py.test --cov-report=xml translation-api/tests/
 
       - name: Coverage
         uses: codecov/codecov-action@v1
