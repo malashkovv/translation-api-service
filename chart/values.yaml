@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: vmalashkov/translation-api-service
-  tag: latest
+  tag: 0.2.1
   pullPolicy: IfNotPresent
 
 config:
