@@ -1,0 +1,5 @@
+aiohttp
+aiohttp-swagger
+aws-xray-sdk
+gunicorn
+uvloop

@@ -4,7 +4,8 @@ ENV PYTHONPATH /usr/src/app
 
 WORKDIR /usr/src/app/
 
-RUN pip install aiohttp aiohttp-swagger aws-xray-sdk gunicorn uvloop
+COPY ./translation-api/requirements.txt ./requirements.txt
+RUN pip install -r ./requirements.txt
 
 COPY ./translation-api ./translation-api
 
