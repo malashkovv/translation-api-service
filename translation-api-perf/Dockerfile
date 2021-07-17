@@ -2,7 +2,8 @@ FROM greenbirdit/locust
 
 RUN apk add build-base
 
-RUN pip install geventhttpclient locustio==0.12.1
+COPY ./translation-api-perf/requirements.txt ./requirements.txt
+RUN pip install -r ./requirements.txt
 
 ADD ./translation-api-perf/test.py /usr/src/app/test.py
 
