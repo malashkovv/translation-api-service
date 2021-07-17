@@ -1,14 +1,7 @@
 # translation-api-service
 
 ## Create 
-Build Docker images and push 
-```bash
-docker build -f translation-api-perf/Dockerfile -t vmalashkov/translation-api-perf .
-docker push vmalashkov/translation-api-perf
 
-docker build -f translation-api/Dockerfile -t vmalashkov/translation-api-service .
-docker push vmalashkov/translation-api-service
-```
 Run 
 ```bash
 cd infrastructure
