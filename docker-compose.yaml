@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./translation-api/Dockerfile
     ports:
-      - 8080:8080
+      - 8080:80
     environment:
       - XRAY=true
   xray-aws-xray:

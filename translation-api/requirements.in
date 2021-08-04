@@ -1,5 +1,4 @@
-aiohttp
-aiohttp-swagger
-aws-xray-sdk
-gunicorn
-uvloop
+fastapi
+uvicorn[standard]
+transformers[sentencepiece]
+torch
