@@ -1,10 +1,7 @@
-from typing import Dict
-
 import uvicorn
 from fastapi import Depends, FastAPI
+from model import Translator, get_translator
 from pydantic import BaseModel
-
-from model import get_translator, Translator
 
 app = FastAPI()
 
@@ -19,4 +16,10 @@ def predict(text: str, model: Translator = Depends(get_translator)):
 
 
 if __name__ == "__main__":
-    uvicorn.run("translation-api.app:app", host="0.0.0.0", port=80, reload=True, log_level="debug")
+    uvicorn.run(
+        "translation-api.app:app",
+        host="0.0.0.0",
+        port=80,
+        reload=True,
+        log_level="debug",
+    )

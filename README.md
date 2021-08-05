@@ -1,14 +1,14 @@
 # translation-api-service
 
-## Create 
+## Create
 
-Run 
+Run
 ```bash
 cd infrastructure
 terraform apply
 ```
 
-Then get kubeconfig file 
+Then get kubeconfig file
 ```bash
 aws eks update-kubeconfig --name translation-api-cluster --kubeconfig config.yaml
 export KUBECONFIG=${PWD}/config.yaml
@@ -52,28 +52,28 @@ Run proxy to get access to dashboard:
 kubectl proxy
 ```
 
-UI is at 
+UI is at
 `http://localhost:8001/api/v1/namespaces/kube-system/services/https:dashboard:https/proxy`
 
-To login into dashboard use token 
+To login into dashboard use token
 ```bash
 kubectl get secrets --namespace kube-system
 ```
 
 Find something starting with `dashboard-token-`
-And then 
+And then
 ```bash
  kubectl describe secret dashboard-token-<ID> --namespace kube-system
 ```
 
-Install metrics server 
+Install metrics server
 ```bash
 helm install stable/metrics-server \
     --name metrics-server \
     --namespace metrics
 ```
 
-Install autoscaler 
+Install autoscaler
 ```bash
 helm install --name autoscaler \
     --set autoDiscovery.clusterName=translation-api-cluster \
@@ -95,7 +95,7 @@ Redeploy API:
 helm upgrade translation-api ./chart --install --force --reset-values --set image.pullPolicy=Always
 ```
 
-## Destroy 
+## Destroy
 
 Delete charts
 ```bash
