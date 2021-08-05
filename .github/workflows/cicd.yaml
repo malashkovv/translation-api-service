@@ -121,4 +121,3 @@ jobs:
       - name: Push API image
         run: |
           docker push vmalashkov/translation-api-perf:${{ steps.vars.outputs.tag }}
-
