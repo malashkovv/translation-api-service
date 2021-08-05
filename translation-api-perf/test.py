@@ -3,7 +3,6 @@ from locust.contrib.fasthttp import FastHttpLocust
 
 
 class UserBehavior(TaskSet):
-
     @task(1)
     def get_translate(self):
         self.client.get("/translate?text=hello")

@@ -47,13 +47,12 @@ jobs:
         with:
           files: ./coverage.xml
 
-  lint:
+  checks:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
@@ -61,16 +60,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
 
-      - name: Install linter suite
-        run: pip install -r cicd/lint_requirements.txt
+      - name: Run pre-commit checks
+        uses: pre-commit/action@v2.0.0
 
-      - name: Run flake8
-        run: flake8 translation-api/
   release-api-docker:
     runs-on: "ubuntu-latest"
     needs:
       - test-api
-      - lint
+      - checks
     if: github.event_name == 'release' && github.event.action == 'created'
     steps:
       - uses: actions/checkout@v2
@@ -98,7 +95,7 @@ jobs:
     runs-on: "ubuntu-latest"
     needs:
       - test-api
-      - lint
+      - checks
     if: github.event_name == 'release' && github.event.action == 'created'
     steps:
       - uses: actions/checkout@v2
@@ -121,4 +118,3 @@ jobs:
       - name: Push API image
         run: |
           docker push vmalashkov/translation-api-perf:${{ steps.vars.outputs.tag }}
-
