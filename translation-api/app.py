@@ -1,22 +1,20 @@
+import asyncio
 import os
+
 import aiohttp
 import uvloop
-import asyncio
-
 from aiohttp import web
 from aiohttp_swagger import setup_swagger
-from aws_xray_sdk.ext.aiohttp.client import aws_xray_trace_config
-
-from aws_xray_sdk.ext.aiohttp.middleware import middleware as xray_middleware
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core.async_context import AsyncContext
-
+from aws_xray_sdk.ext.aiohttp.client import aws_xray_trace_config
+from aws_xray_sdk.ext.aiohttp.middleware import middleware as xray_middleware
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 def is_xray_on():
-    return os.environ.get('XRAY', 'false') == 'true'
+    return os.environ.get("XRAY", "false") == "true"
 
 
 def create_session():
@@ -32,9 +30,13 @@ async def real_translate(text):
         async with sess.get(req.format(text=text)) as resp:
             if resp.status != 200:
                 if resp.status == 429:
-                    raise web.HTTPTooManyRequests(text="Too many requests for Google API.")
+                    raise web.HTTPTooManyRequests(
+                        text="Too many requests for Google API."
+                    )
                 else:
-                    raise web.HTTPServiceUnavailable(text=f"Google API returned code: {resp.status}")
+                    raise web.HTTPServiceUnavailable(
+                        text=f"Google API returned code: {resp.status}"
+                    )
             text = await resp.json()
             return text[0][0][0]
 
@@ -69,7 +71,7 @@ async def handle(request):
         "429":
             description: Too many requests (Google API has restriction on how many calls you can do.)
     """
-    text = request.rel_url.query.get('text', "")
+    text = request.rel_url.query.get("text", "")
     translated_text = await translate(text) if text else ""
     return aiohttp.web.json_response({"translation": translated_text})
 
@@ -81,14 +83,14 @@ async def init_func(argv=None):
             service="translation-api",
             sampling=False,
             context=AsyncContext(),
-            daemon_address="xray-aws-xray:2000"
+            daemon_address="xray-aws-xray:2000",
         )
         middlewares.append(xray_middleware)
     app = aiohttp.web.Application(middlewares=middlewares)
-    app.add_routes([aiohttp.web.get('/translate', handle)])
+    app.add_routes([aiohttp.web.get("/translate", handle)])
     setup_swagger(app)
     return app
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     web.run_app(init_func())
