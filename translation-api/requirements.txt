@@ -4,6 +4,8 @@
 #
 #    pip-compile
 #
+--find-links https://download.pytorch.org/whl/torch_stable.html
+
 asgiref==3.4.1
     # via uvicorn
 certifi==2021.5.30
@@ -68,7 +70,7 @@ starlette==0.14.2
     # via fastapi
 tokenizers==0.10.3
     # via transformers
-torch==1.9.0
+torch==1.9.0+cu111
     # via -r requirements.in
 tqdm==4.62.0
     # via

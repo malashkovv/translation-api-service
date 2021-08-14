@@ -24,7 +24,7 @@ class Translator:
         else:
             device_type = "cpu"
             logger.warning("No cuda device is found! Using CPU instead. ")
-        return device_type
+        return torch.device(device_type)
 
     def translate(self, text):
         tokenized_text = self.tokenizer([text], return_tensors="pt")
