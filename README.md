@@ -1,6 +1,10 @@
 # translation-api-service
 
-## Create
+## Kubernetes setup
+
+### EKS
+
+#### Create
 
 Run
 ```bash
@@ -63,7 +67,7 @@ kubectl get secrets --namespace kube-system
 Find something starting with `dashboard-token-`
 And then
 ```bash
- kubectl describe secret dashboard-token-<ID> --namespace kube-system
+kubectl describe secret dashboard-token-<ID> --namespace kube-system
 ```
 
 Install metrics server
@@ -84,18 +88,12 @@ helm install --name autoscaler \
     stable/cluster-autoscaler
 ```
 
-Deploy x-ray:
-```bash
-helm repo add okgolove https://okgolove.github.io/helm-charts
-helm install okgolove/aws-xray --name "xray"
-```
-
 Redeploy API:
 ```bash
 helm upgrade translation-api ./chart --install --force --reset-values --set image.pullPolicy=Always
 ```
 
-## Destroy
+#### Destroy
 
 Delete charts
 ```bash
@@ -105,6 +103,54 @@ helm ls --all --short | xargs -L1 helm delete --purge
 Destroy cluster
 ```bash
 terraform destroy
+```
+
+### microk8s
+
+#### Create
+
+```bash
+microk8s enable dashboard gpu dns helm registry
+```
+
+```bash
+microk8s.helm init
+```
+
+Note: you need to add `microk8s` before each `helm`, `kubectl` or other commands available in `microk8s` 
+
+Open separate tab to port-forward dashboard
+```bash
+microk8s kubectl port-forward -n kube-system service/kubernetes-dashboard 10443:443
+```
+
+It will be available at `https://localhost:10443`
+
+To login into dashboard use token
+```bash
+token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)                                       ✔  base Py  23:18:33 
+microk8s kubectl -n kube-system describe secret $token
+```
+
+Build and push local image into microk8s registry
+```bash
+docker build -f translation-api/Dockerfile -t localhost:32000/translation-api:dev .
+docker push localhost:32000/translation-api:dev
+```
+
+Install API service with local image
+```bash
+microk8s helm install -n translation-api ./chart \
+    --set workers.replicaCount=2 \
+    --set image.repository=localhost:32000/translation-api \
+    --set image.tag=dev
+```
+
+#### Destroy
+
+Delete translation api chart
+```bash
+microk8s helm del --purge translation-api
 ```
 
 ## Vegeta performance

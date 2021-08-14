@@ -6,16 +6,6 @@ services:
       dockerfile: ./translation-api/Dockerfile
     ports:
       - 8080:80
-    environment:
-      - XRAY=true
-  xray-aws-xray:
-    image: namshi/aws-xray
-    ports:
-      - 2000:2000/udp
-    environment:
-      - AWS_REGION=eu-central-1
-    volumes:
-      - ~/.aws/:/root/.aws/:ro
   perf:
     build:
       context: .

@@ -1,9 +1,10 @@
-replicaCount: 2
+workers:
+  replicaCount: 2
 
 image:
-  repository: vmalashkov/translation-api-service
+  repository: vmalashkov/translation-api
   tag: v0.2.2
   pullPolicy: IfNotPresent
 
 config:
-  xray: true
+  translationModelCode: en-nl

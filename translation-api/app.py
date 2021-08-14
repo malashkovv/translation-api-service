@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import Depends, FastAPI
-from model import Translator, get_translator
+from .model import Translator, get_translator
 from pydantic import BaseModel
 
 app = FastAPI()

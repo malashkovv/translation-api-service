@@ -11,5 +11,5 @@ COPY ./translation-api ./translation-api
 
 EXPOSE 80
 
-#CMD ["gunicorn", "translation-api.app:init_func", "-c", "/usr/src/app/translation-api/gunicorn_conf.py"]
 CMD ["uvicorn", "translation-api.app:app", "--host", "0.0.0.0", "--port", "80"]
+#uvicorn translation-api.app:app --host 0.0.0.0 --port 80

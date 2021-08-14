@@ -1,6 +1,7 @@
 import torch
-from log import logger
+from .log import logger
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from .config import settings
 
 
 class Translator:
@@ -33,7 +34,7 @@ class Translator:
         return self.tokenizer.batch_decode(translation, skip_special_tokens=True)[0]
 
 
-translator = Translator.initialize("en-nl")
+translator = Translator.initialize(settings.translation_model_code)
 
 
 def get_translator():
