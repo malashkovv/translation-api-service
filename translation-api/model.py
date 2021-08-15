@@ -9,6 +9,15 @@ class Translator:
         self.model = model
         self.tokenizer = tokenizer
 
+        if torch.cuda.is_available():
+            device_type = "cuda:0"
+        else:
+            device_type = "cpu"
+            logger.warning("No cuda device is found! Using CPU instead. ")
+        self.device = torch.device(device_type)
+
+        self.model.to(self.device)
+
     @classmethod
     def initialize(cls, code):
         tokenizer = AutoTokenizer.from_pretrained(f"Helsinki-NLP/opus-mt-{code}")
@@ -16,15 +25,6 @@ class Translator:
             f"Helsinki-NLP/opus-mt-{code}", torchscript=True
         )
         return cls(tokenizer, model)
-
-    @property
-    def device(self):
-        if torch.cuda.is_available():
-            device_type = "cuda:0"
-        else:
-            device_type = "cpu"
-            logger.warning("No cuda device is found! Using CPU instead. ")
-        return torch.device(device_type)
 
     def translate(self, text):
         tokenized_text = self.tokenizer([text], return_tensors="pt")

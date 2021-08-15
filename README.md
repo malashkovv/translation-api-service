@@ -1,5 +1,9 @@
 # translation-api-service
 
+## Local setup
+
+Tested on Ubuntu 20.04 LTS with Nvidia driver 460 (CUDA 11.2).
+
 ## Kubernetes setup
 
 ### EKS
