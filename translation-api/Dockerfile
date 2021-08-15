@@ -22,7 +22,7 @@ RUN export PYTHON_MAJOR_VERSION=$(cut -d '.' -f-2 <<< $PYTHON_VERSION) \
     && ln -fs /usr/local/bin/python$PYTHON_MAJOR_VERSION /usr/bin/python \
     && ln -fs /usr/local/bin/pip$PYTHON_MAJOR_VERSION /usr/bin/pip
 
-ENV LD_LIBRARY_PATH /usr/local/cuda-11.0/lib64:/usr/local/cuda-11.0/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH /usr/local/cuda-11.1/lib64:/usr/local/cuda-11.1/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 
 FROM base_system
 
