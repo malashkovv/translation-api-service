@@ -1,7 +1,10 @@
 import uvicorn
 from fastapi import Depends, FastAPI
-from .model import Translator, get_translator
 from pydantic import BaseModel
+
+from .model import Translator, get_translator
+from .config import settings
+
 
 app = FastAPI()
 
@@ -11,8 +14,13 @@ class TranslationResponse(BaseModel):
 
 
 @app.get("/translate", response_model=TranslationResponse)
-def predict(text: str, model: Translator = Depends(get_translator)):
+def translate(text: str, model: Translator = Depends(get_translator)):
     return TranslationResponse(translation=model.translate(text))
+
+
+@app.get("/health")
+def health():
+    return {'alive': True, 'settings': {'translation_model_code': settings.translation_model_code}}
 
 
 if __name__ == "__main__":

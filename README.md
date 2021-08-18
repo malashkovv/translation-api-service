@@ -8,6 +8,8 @@ Tested on Ubuntu 20.04 LTS with Nvidia driver 460 (CUDA 11.2).
 
 ### EKS
 
+NOTE: This section is outdated as it uses helm 2 and not 3.
+
 #### Create
 
 Run
@@ -109,52 +111,49 @@ Destroy cluster
 terraform destroy
 ```
 
-### microk8s
+### minikube
 
 #### Create
 
+Start the cluster
 ```bash
-microk8s enable dashboard gpu dns helm registry
+minikube start
 ```
 
+Enable addons
 ```bash
-microk8s.helm init
+minikube addons enable nvidia-driver-installer
+minikube addons enable nvidia-gpu-device-plugin
+minikube addons enable registry
+minikube addons enable helm-tiller
+minikube addons enable metrics-server
 ```
 
-Note: you need to add `microk8s` before each `helm`, `kubectl` or other commands available in `microk8s` 
-
-Open separate tab to port-forward dashboard
+In order to get to the dashboard run in a separate tab
 ```bash
-microk8s kubectl port-forward -n kube-system service/kubernetes-dashboard 10443:443
-```
 
-It will be available at `https://localhost:10443`
-
-To login into dashboard use token
-```bash
-token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)                                       ✔  base Py  23:18:33 
-microk8s kubectl -n kube-system describe secret $token
 ```
 
 Build and push local image into microk8s registry
 ```bash
-docker build -f translation-api/Dockerfile -t localhost:32000/translation-api:dev .
-docker push localhost:32000/translation-api:dev
+docker build -f translation-api/Dockerfile -t translation-api .
+minikube image load translation-api:latest
 ```
 
-Install API service with local image
-```bash
-microk8s helm install -n translation-api ./chart \
+Install API chart
+```
+helm install translation-api ./chart \
     --set workers.replicaCount=2 \
-    --set image.repository=localhost:32000/translation-api \
-    --set image.tag=dev
+    --set workers.gpu=0 \
+    --set image.repository=translation-api \
+    --set image.tag=latest
 ```
 
 #### Destroy
 
-Delete translation api chart
+Delete service
 ```bash
-microk8s helm del --purge translation-api
+helm del translation-api
 ```
 
 ## Vegeta performance

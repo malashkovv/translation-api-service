@@ -7,7 +7,7 @@ spec:
     matchLabels:
       app: translation-api-pod
   replicas: {{ .Values.workers.replicaCount }}
-  minReadySeconds: 15
+#  minReadySeconds: 15
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,15 +23,29 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           name: translation-api
           ports:
-            - containerPort: 8080
+            - containerPort: 80
           resources:
             limits:
-              nvidia.com/gpu: 1
-              cpu: 500m
-              memory: 512Mi
+              nvidia.com/gpu: {{ .Values.workers.gpu }}
+              cpu: 1000m
+              memory: 2048Mi
             requests:
-              cpu: 250m
-              memory: 256Mi
+              cpu: 500m
+              memory: 1024Mi
           env:
             - name: TRANSLATION_MODEL_CODE
               value: "{{ .Values.config.translationModelCode }}"
+          startupProbe:
+            httpGet:
+              path: /health
+              scheme: HTTP
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              scheme: HTTP
+              port: 80
+            periodSeconds: 20
+            failureThreshold: 3

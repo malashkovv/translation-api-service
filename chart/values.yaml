@@ -1,5 +1,6 @@
 workers:
   replicaCount: 2
+  gpu: 1
 
 image:
   repository: vmalashkov/translation-api
