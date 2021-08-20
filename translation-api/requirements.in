@@ -2,5 +2,6 @@
 
 fastapi
 uvicorn[standard]
+gunicorn
 transformers[sentencepiece]
 torch==1.9.0+cu111

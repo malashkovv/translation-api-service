@@ -43,7 +43,7 @@ helm install -n locust \
     --set image.repository=vmalashkov/translation-api-perf \
     --set image.tag=latest \
     --set worker.replicaCount=3 \
-    --set worker.config.locust-script=/usr/src/app/test.py \
+    --set worker.config.locust-script=/usr/src/app/main.py \
     stable/locust
 ```
 
@@ -113,6 +113,9 @@ terraform destroy
 
 ### minikube
 
+Unfortunately, I haven't managed to run `minikube` with GPU enabled, I did not have a spare one. Please, 
+see official docs on how to enable GPU.
+
 #### Create
 
 Start the cluster
@@ -122,8 +125,6 @@ minikube start
 
 Enable addons
 ```bash
-minikube addons enable nvidia-driver-installer
-minikube addons enable nvidia-gpu-device-plugin
 minikube addons enable registry
 minikube addons enable helm-tiller
 minikube addons enable metrics-server
@@ -141,7 +142,7 @@ minikube image load translation-api:latest
 ```
 
 Install API chart
-```
+```bash
 helm install translation-api ./chart \
     --set workers.replicaCount=2 \
     --set workers.gpu=0 \
@@ -149,11 +150,43 @@ helm install translation-api ./chart \
     --set image.tag=latest
 ```
 
+To access webserver run 
+```bash
+minikube tunnel
+```
+
+After that get `EXTERNAL_IP` for a load balancer with the following command
+```bash
+kubectl get svc
+```
+
+Now you can access it at `<EXTERNAL_IP>:80/docs`
+
+Build perf image
+```bash
+docker build -f translation-api-perf/Dockerfile -t translation-api-perf .
+minikube image load translation-api-perf:latest
+```
+
+Install locust service
+```bash
+helm repo add deliveryhero https://charts.deliveryhero.io/
+
+kubectl create configmap loadtest-locustfile --from-file translation-api-perf/main.py
+
+helm install locust deliveryhero/locust \
+    --set loadtest.name=loadtest \
+    --set loadtest.locust_locustfile_configmap=loadtest-locustfile \
+    --set loadtest.locust_host=http://translation-api-lb:80 \
+    --set worker.replicas=2
+```
+
 #### Destroy
 
 Delete service
 ```bash
 helm del translation-api
+helm del locust
 ```
 
 ## Vegeta performance

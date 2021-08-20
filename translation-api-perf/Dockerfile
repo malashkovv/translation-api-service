@@ -1,10 +1,4 @@
-FROM greenbirdit/locust
+FROM locustio/locust:2.1.0
 
-RUN apk add build-base
-
-COPY ./translation-api-perf/requirements.txt ./requirements.txt
-RUN pip install -r ./requirements.txt
-
-ADD ./translation-api-perf/test.py /usr/src/app/test.py
-
-ENV LOCUSTFILE_PATH=/usr/src/app/test.py
+ADD ./translation-api-perf/quotes.json /usr/src/app/quotes.json
+ADD ./translation-api-perf/main.py /usr/src/app/main.py

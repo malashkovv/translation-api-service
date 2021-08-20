@@ -14,12 +14,17 @@ class Translator:
         else:
             device_type = "cpu"
             logger.warning("No cuda device is found! Using CPU instead. ")
-        self.device = torch.device(device_type)
+        self._device = torch.device(device_type)
 
-        self.model.to(self.device)
+        self.model.to(self._device)
+
+    @property
+    def device(self):
+        """Low-level info about device used by PyTorch."""
+        return self._device.type
 
     @classmethod
-    def initialize(cls, code):
+    def initialize(cls, code: str):
         tokenizer = AutoTokenizer.from_pretrained(f"Helsinki-NLP/opus-mt-{code}")
         model = AutoModelForSeq2SeqLM.from_pretrained(
             f"Helsinki-NLP/opus-mt-{code}", torchscript=True
@@ -28,7 +33,7 @@ class Translator:
 
     def translate(self, text):
         tokenized_text = self.tokenizer([text], return_tensors="pt")
-        tokenized_text.to(self.device)
+        tokenized_text.to(self._device)
 
         translation = self.model.generate(**tokenized_text)
         return self.tokenizer.batch_decode(translation, skip_special_tokens=True)[0]

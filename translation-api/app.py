@@ -19,8 +19,12 @@ def translate(text: str, model: Translator = Depends(get_translator)):
 
 
 @app.get("/health")
-def health():
-    return {'alive': True, 'settings': {'translation_model_code': settings.translation_model_code}}
+def health(model: Translator = Depends(get_translator)):
+    return {
+        'alive': True,
+        'pytorch_device': model.device,
+        'settings': {'translation_model_code': settings.translation_model_code}
+    }
 
 
 if __name__ == "__main__":
