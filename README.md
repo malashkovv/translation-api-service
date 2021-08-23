@@ -229,3 +229,4 @@ Status Codes  [code:count]               0:165  200:9835
 * [Provisioning Kubernetes clusters on AWS with Terraform and EKS](https://learnk8s.io/terraform-eks)
 * [EKS GPU worker group using Terraform](https://stackoverflow.com/questions/65774363/eks-gpu-worker-group-using-terraform)
 * [Quotes Dataset](https://www.kaggle.com/akmittal/quotes-dataset)
+* [Serving ML models with multiple workers linearly adds the RAM's load](https://github.com/tiangolo/fastapi/issues/2425#issuecomment-734790381)
