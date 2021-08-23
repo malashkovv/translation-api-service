@@ -113,7 +113,7 @@ terraform destroy
 
 ### minikube
 
-Unfortunately, I haven't managed to run `minikube` with GPU enabled, I did not have a spare one. Please, 
+Unfortunately, I haven't managed to run `minikube` with GPU enabled, I did not have a spare one. Please,
 see official docs on how to enable GPU.
 
 #### Create
@@ -150,7 +150,7 @@ helm install translation-api ./chart \
     --set image.tag=latest
 ```
 
-To access webserver run 
+To access webserver run
 ```bash
 minikube tunnel
 ```
@@ -189,7 +189,9 @@ helm del translation-api
 helm del locust
 ```
 
-## Vegeta performance
+## Performance tests
+
+### Vegeta
 
 For local testing
 ```
@@ -212,3 +214,10 @@ Bytes Out     [total, mean]              0, 0.00
 Success       [ratio]                    98.35%
 Status Codes  [code:count]               0:165  200:9835
 ```
+
+## Useful links
+
+* [An introduction to Kubernetes](https://www.jeremyjordan.me/kubernetes/amp/)
+* [Kubernetes Concepts and Architecture](https://platform9.com/blog/kubernetes-enterprise-chapter-2-kubernetes-architecture-concepts/)
+* [Provisioning Kubernetes clusters on AWS with Terraform and EKS](https://learnk8s.io/terraform-eks)
+* [EKS GPU worker group using Terraform](https://stackoverflow.com/questions/65774363/eks-gpu-worker-group-using-terraform)
