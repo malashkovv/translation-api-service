@@ -1,5 +1,7 @@
 workers:
-  replicaCount: 2
+  replicaCount:
+    max: 10
+    min: 2
   gpu: 1
 
 image:

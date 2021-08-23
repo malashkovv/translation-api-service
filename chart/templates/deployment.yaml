@@ -6,8 +6,7 @@ spec:
   selector:
     matchLabels:
       app: translation-api-pod
-  replicas: {{ .Values.workers.replicaCount }}
-#  minReadySeconds: 15
+#  replicas: {{ .Values.workers.replicaCount }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

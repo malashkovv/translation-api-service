@@ -85,13 +85,13 @@ helm install stable/metrics-server \
 
 Install autoscaler
 ```bash
-helm install --name autoscaler \
+helm install --name autoscaler.yaml \
     --set autoDiscovery.clusterName=translation-api-cluster \
     --set autoDiscovery.enabled=true \
     --set awsRegion=eu-central-1 \
     --set cloudProvider=aws \
     --set rbac.create=true \
-    stable/cluster-autoscaler
+    stable/cluster-autoscaler.yaml
 ```
 
 Redeploy API:
@@ -144,7 +144,6 @@ minikube image load translation-api:latest
 Install API chart
 ```bash
 helm install translation-api ./chart \
-    --set workers.replicaCount=2 \
     --set workers.gpu=0 \
     --set image.repository=translation-api \
     --set image.tag=latest
@@ -161,6 +160,12 @@ kubectl get svc
 ```
 
 Now you can access it at `<EXTERNAL_IP>:80/docs`
+
+Or yu can run
+```bash
+minikube service translation-api-lb --url
+```
+
 
 Build perf image
 ```bash

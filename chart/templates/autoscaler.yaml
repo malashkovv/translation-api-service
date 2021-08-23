@@ -1,0 +1,12 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: translation-api-autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: translation-api-deployment
+  minReplicas: {{ .Values.workers.replicaCount.min }}
+  maxReplicas: {{ .Values.workers.replicaCount.max }}
+  targetCPUUtilizationPercentage: 50
