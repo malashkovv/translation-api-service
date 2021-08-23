@@ -1,7 +1,8 @@
 import torch
-from .log import logger
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+
 from .config import settings
+from .log import logger
 
 
 class Translator:

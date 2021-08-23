@@ -2,9 +2,8 @@ import uvicorn
 from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 
-from .model import Translator, get_translator
 from .config import settings
-
+from .model import Translator, get_translator
 
 app = FastAPI()
 
@@ -21,9 +20,9 @@ def translate(text: str, model: Translator = Depends(get_translator)):
 @app.get("/health")
 def health(model: Translator = Depends(get_translator)):
     return {
-        'alive': True,
-        'pytorch_device': model.device,
-        'settings': {'translation_model_code': settings.translation_model_code}
+        "alive": True,
+        "pytorch_device": model.device,
+        "settings": {"translation_model_code": settings.translation_model_code},
     }
 
 

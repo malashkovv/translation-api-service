@@ -1,7 +1,7 @@
 import json
 import random
 
-from locust import task, between
+from locust import between, task
 from locust.contrib.fasthttp import FastHttpUser
 
 with open("/usr/src/app/quotes.json") as quotes_file:
@@ -14,5 +14,5 @@ class WebClient(FastHttpUser):
 
     @task
     def get_translation(self):
-        random_quote = random.choice(quotes)['Quote']
+        random_quote = random.choice(quotes)["Quote"]
         self.client.get(f"/translate?text={random_quote}")
