@@ -230,3 +230,4 @@ Status Codes  [code:count]               0:165  200:9835
 * [EKS GPU worker group using Terraform](https://stackoverflow.com/questions/65774363/eks-gpu-worker-group-using-terraform)
 * [Quotes Dataset](https://www.kaggle.com/akmittal/quotes-dataset)
 * [Serving ML models with multiple workers linearly adds the RAM's load](https://github.com/tiangolo/fastapi/issues/2425#issuecomment-734790381)
+* [PyTorch 101, Part 4: Memory Management and Using Multiple GPUs](https://blog.paperspace.com/pytorch-memory-multi-gpu-debugging/)

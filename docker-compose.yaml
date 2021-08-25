@@ -6,6 +6,9 @@ services:
       dockerfile: ./translation-api/Dockerfile
     ports:
       - 8080:80
+    environment:
+      - TORCH_DEVICE=cuda:0
+      - TRANSLATION_MODEL_CODE=en-ru
     deploy:
       resources:
         reservations:

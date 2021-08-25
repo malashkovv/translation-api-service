@@ -2,21 +2,13 @@ import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 from .config import settings
-from .log import logger
 
 
 class Translator:
-    def __init__(self, tokenizer, model):
+    def __init__(self, tokenizer, model, device_type="cpu"):
         self.model = model
         self.tokenizer = tokenizer
-
-        if torch.cuda.is_available():
-            device_type = "cuda:0"
-        else:
-            device_type = "cpu"
-            logger.warning("No cuda device is found! Using CPU instead. ")
         self._device = torch.device(device_type)
-
         self.model.to(self._device)
 
     @property
@@ -25,22 +17,35 @@ class Translator:
         return self._device.type
 
     @classmethod
-    def initialize(cls, code: str):
+    def initialize(cls, code: str, device_type="cpu"):
         tokenizer = AutoTokenizer.from_pretrained(f"Helsinki-NLP/opus-mt-{code}")
         model = AutoModelForSeq2SeqLM.from_pretrained(
             f"Helsinki-NLP/opus-mt-{code}", torchscript=True
         )
-        return cls(tokenizer, model)
+        return cls(tokenizer, model, device_type)
 
     def translate(self, text):
-        tokenized_text = self.tokenizer([text], return_tensors="pt")
-        tokenized_text.to(self._device)
+        with torch.no_grad():
+            tokenized_text_tensor = self.tokenizer([text], return_tensors="pt")
+            tokenized_text_tensor.to(self._device)
 
-        translation = self.model.generate(**tokenized_text)
-        return self.tokenizer.batch_decode(translation, skip_special_tokens=True)[0]
+            translation_tensor = self.model.generate(**tokenized_text_tensor)
+            translated_text = self.tokenizer.batch_decode(
+                translation_tensor, skip_special_tokens=True
+            )[0]
+
+            # Clean up memory
+            del translation_tensor
+            del tokenized_text_tensor
+            if self.device == "cuda":
+                torch.cuda.empty_cache()
+
+            return translated_text
 
 
-translator = Translator.initialize(settings.translation_model_code)
+translator = Translator.initialize(
+    code=settings.translation_model_code, device_type=settings.torch_device
+)
 
 
 def get_translator():

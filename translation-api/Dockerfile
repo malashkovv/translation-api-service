@@ -36,5 +36,4 @@ COPY ./translation-api ./translation-api
 
 EXPOSE 80
 
-#CMD ["uvicorn", "translation-api.app:app", "--host", "0.0.0.0", "--port", "80"]
-CMD ["gunicorn", "translation-api.app:app", "-c", "/usr/src/app/translation-api/gunicorn_conf.py"]
+ENTRYPOINT ["/usr/src/app/translation-api/entrypoint.sh"]
