@@ -9,9 +9,9 @@ if [ $(python -c "import torch; print(not torch.cuda.is_available())") = "True" 
   export TORCH_DEVICE=cpu
 fi
 
-if [ $1 == 'server' ] && [ $TORCH_DEVICE == "cpu" ] ; then
+if [[ $1 == 'server' ]] && [[ $TORCH_DEVICE == "cpu" ]]; then
   exec gunicorn translation-api.app:app -c /usr/src/app/translation-api/gunicorn_cpu_conf.py
-elif [ $1 == 'server' ] && [[ $TORCH_DEVICE == cuda:* ]]; then
+elif [[ $1 == 'server' ]] && [[ $TORCH_DEVICE == cuda:* ]]; then
   exec gunicorn translation-api.app:app -c /usr/src/app/translation-api/gunicorn_cuda_conf.py
 fi
 
