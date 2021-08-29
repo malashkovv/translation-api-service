@@ -11,3 +11,4 @@ image:
 
 config:
   translationModelCode: en-nl
+  torchDevice: cpu

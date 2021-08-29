@@ -4,11 +4,23 @@
 
 Tested on Ubuntu 20.04 LTS with Nvidia driver 460 (CUDA 11.2).
 
+In order to bring up the service locally, run build command
+```bash
+docker-compose build
+```
+
+Create API service
+```bash
+docker-compose up -d api
+```
+
+App will be available at [localhost:8080](localhost:8080)
+
 ## Kubernetes setup
 
 ### EKS
 
-NOTE: This section is outdated as it uses helm 2 and not 3.
+**NOTE: This whole section about EKS is outdated and will be updated later!**
 
 #### Create
 
@@ -114,7 +126,7 @@ terraform destroy
 ### minikube
 
 Unfortunately, I haven't managed to run `minikube` with GPU enabled, I did not have a spare one. Please,
-see official docs on how to enable GPU.
+see the official docs on how to enable GPU.
 
 #### Create
 
@@ -132,10 +144,10 @@ minikube addons enable metrics-server
 
 In order to get to the dashboard run in a separate tab
 ```bash
-
+minikube dashboard
 ```
 
-Build and push local image into microk8s registry
+Build and push local image into minikube registry
 ```bash
 docker build -f translation-api/Dockerfile -t translation-api .
 minikube image load translation-api:latest
@@ -145,6 +157,7 @@ Install API chart
 ```bash
 helm install translation-api ./chart \
     --set workers.gpu=0 \
+    --set config.torchDevice=cpu \
     --set image.repository=translation-api \
     --set image.tag=latest
 ```
@@ -196,29 +209,7 @@ helm del locust
 
 ## Performance tests
 
-### Vegeta
 
-For local testing
-```
-echo 'GET http://localhost:8080/translate?text=hello' | vegeta -cpus 4 attack -rate 3000 -duration 20s -timeout 1s | vegeta report
-```
-
-For AWS cloud
-```bash
-echo 'GET http://<elb endpoint>:8080/translate?text=hello' | vegeta -cpus 4 attack -rate 1000 -duration 5s -timeout 1s | vegeta report
-```
-
-Example report:
-```bash
-> echo 'GET http://a018dcd6c202611ea8d600a70e5e28fe-201213391.eu-central-1.elb.amazonaws.com:8080/translate?text=hello' | vegeta -cpus 4 attack -rate 2000 -duration 5s -timeout 1s | vegeta report
-Requests      [total, rate, throughput]  10000, 2000.23, 1936.70
-Duration      [total, attack, wait]      5.078213063s, 4.999413972s, 78.799091ms
-Latencies     [mean, 50, 95, 99, max]    69.668173ms, 63.431027ms, 89.035634ms, 207.208686ms, 1.000132776s
-Bytes In      [total, mean]              236040, 23.60
-Bytes Out     [total, mean]              0, 0.00
-Success       [ratio]                    98.35%
-Status Codes  [code:count]               0:165  200:9835
-```
 
 ## Useful links
 
