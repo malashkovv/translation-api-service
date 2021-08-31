@@ -155,11 +155,11 @@ minikube image load translation-api:latest
 
 Install API chart
 ```bash
-helm install translation-api ./chart \
+**helm install translation-api ./chart \
     --set workers.gpu=0 \
     --set config.torchDevice=cpu \
     --set image.repository=translation-api \
-    --set image.tag=latest
+    --set image.tag=latest**
 ```
 
 To access webserver run
