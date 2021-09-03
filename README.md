@@ -32,7 +32,7 @@ terraform apply
 
 Then get kubeconfig file
 ```bash
-aws eks update-kubeconfig --name translation-api-cluster --kubeconfig config.yaml
+aws eks update-kubeconfig --name translation-cluster --kubeconfig config.yaml
 export KUBECONFIG=${PWD}/config.yaml
 ```
 
@@ -44,7 +44,7 @@ helm init --service-account tiller
 
 Install API service
 ```bash
-helm install -n translation-api ./chart
+helm install -n translation ./chart
 ```
 
 Install locust service
@@ -52,7 +52,7 @@ Install locust service
 helm install -n locust \
     --set service.type=LoadBalancer \
     --set master.config.target-host=http://translation-api-lb:8080 \
-    --set image.repository=vmalashkov/translation-api-perf \
+    --set image.repository=vmalashkov/translation-perf \
     --set image.tag=latest \
     --set worker.replicaCount=3 \
     --set worker.config.locust-script=/usr/src/app/main.py \
@@ -98,7 +98,7 @@ helm install stable/metrics-server \
 Install autoscaler
 ```bash
 helm install --name autoscaler.yaml \
-    --set autoDiscovery.clusterName=translation-api-cluster \
+    --set autoDiscovery.clusterName=translation-cluster \
     --set autoDiscovery.enabled=true \
     --set awsRegion=eu-central-1 \
     --set cloudProvider=aws \
@@ -108,7 +108,7 @@ helm install --name autoscaler.yaml \
 
 Redeploy API:
 ```bash
-helm upgrade translation-api ./chart --install --force --reset-values --set image.pullPolicy=Always
+helm upgrade translation ./chart --install --force --reset-values --set image.pullPolicy=Always
 ```
 
 #### Destroy
@@ -149,16 +149,16 @@ minikube dashboard
 
 Build and push local image into minikube registry
 ```bash
-docker build -f translation-api/Dockerfile -t translation-api .
-minikube image load translation-api:latest
+docker build -f translation/Dockerfile -t translation .
+minikube image load translation:latest
 ```
 
 Install API chart
 ```bash
-**helm install translation-api ./chart \
+**helm install translation ./chart \
     --set workers.gpu=0 \
     --set config.torchDevice=cpu \
-    --set image.repository=translation-api \
+    --set image.repository=translation \
     --set image.tag=latest**
 ```
 
@@ -176,21 +176,21 @@ Now you can access it at `<EXTERNAL_IP>:80/docs`
 
 Or yu can run
 ```bash
-minikube service translation-api-lb --url
+minikube service translation-lb --url
 ```
 
 
 Build perf image
 ```bash
-docker build -f translation-api-perf/Dockerfile -t translation-api-perf .
-minikube image load translation-api-perf:latest
+docker build -f translation-perf/Dockerfile -t translation-perf .
+minikube image load translation-perf:latest
 ```
 
 Install locust service
 ```bash
 helm repo add deliveryhero https://charts.deliveryhero.io/
 
-kubectl create configmap loadtest-locustfile --from-file translation-api-perf/main.py
+kubectl create configmap loadtest-locustfile --from-file translation-perf/main.py
 
 helm install locust deliveryhero/locust \
     --set loadtest.name=loadtest \
@@ -203,7 +203,7 @@ helm install locust deliveryhero/locust \
 
 Delete service
 ```bash
-helm del translation-api
+helm del translation
 helm del locust
 ```
 
@@ -213,6 +213,7 @@ helm del locust
 
 ## Useful links
 
+* [Apache Kafka producer and consumer with FastAPI and aiokafka](https://iwpnd.pw/articles/2020-03/apache-kafka-fastapi-geostream)
 * [Locust Helm Chart](https://github.com/deliveryhero/helm-charts/tree/master/stable/locust)
 * [Uvicorn Deployment](https://www.uvicorn.org/deployment/)
 * [An introduction to Kubernetes](https://www.jeremyjordan.me/kubernetes/amp/)

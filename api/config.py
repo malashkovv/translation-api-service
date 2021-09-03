@@ -2,8 +2,7 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    translation_model_code = "en-de"
-    torch_device = "cuda:0"
+    kafka_brokers = "kafka:9092"
 
 
 settings = Settings()

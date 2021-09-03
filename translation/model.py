@@ -1,8 +1,6 @@
 import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
-from .config import settings
-
 
 class Translator:
     def __init__(self, tokenizer, model, device_type="cpu"):
@@ -24,15 +22,15 @@ class Translator:
         )
         return cls(tokenizer, model, device_type)
 
-    def translate(self, text):
+    def translate(self, texts):
         with torch.no_grad():
-            tokenized_text_tensor = self.tokenizer([text], return_tensors="pt")
+            tokenized_text_tensor = self.tokenizer(texts, return_tensors="pt")
             tokenized_text_tensor.to(self._device)
 
             translation_tensor = self.model.generate(**tokenized_text_tensor)
-            translated_text = self.tokenizer.batch_decode(
+            translated_texts = self.tokenizer.batch_decode(
                 translation_tensor, skip_special_tokens=True
-            )[0]
+            )
 
             # Clean up memory
             del translation_tensor
@@ -40,13 +38,4 @@ class Translator:
             if self.device == "cuda":
                 torch.cuda.empty_cache()
 
-            return translated_text
-
-
-translator = Translator.initialize(
-    code=settings.translation_model_code, device_type=settings.torch_device
-)
-
-
-def get_translator():
-    return translator
+            return translated_texts
