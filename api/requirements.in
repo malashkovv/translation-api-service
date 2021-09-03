@@ -3,3 +3,4 @@ uvicorn[standard]
 gunicorn
 aiokafka
 aioredis
+backoff

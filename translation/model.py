@@ -24,7 +24,10 @@ class Translator:
 
     def translate(self, texts):
         with torch.no_grad():
-            tokenized_text_tensor = self.tokenizer(texts, return_tensors="pt")
+            tokenized_text_tensor = self.tokenizer(
+                texts, return_tensors="pt", padding="longest"
+            )
+
             tokenized_text_tensor.to(self._device)
 
             translation_tensor = self.model.generate(**tokenized_text_tensor)

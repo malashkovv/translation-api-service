@@ -12,6 +12,8 @@ asgiref==3.4.1
     # via uvicorn
 async-timeout==3.0.1
     # via aioredis
+backoff==1.11.1
+    # via -r requirements.in
 click==8.0.1
     # via uvicorn
 fastapi==0.68.0

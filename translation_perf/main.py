@@ -15,4 +15,11 @@ class WebClient(FastHttpUser):
     @task
     def get_translation(self):
         random_quote = random.choice(quotes)["Quote"]
-        self.client.get(f"/translate?text={random_quote}")
+        self.client.post(
+            "/translate",
+            json={
+                "text": random_quote,
+                "source_language": "en",
+                "destination_language": "ru",
+            },
+        )

@@ -34,6 +34,8 @@ packaging==21.0
     #   transformers
 protobuf==3.17.3
     # via transformers
+pydantic==1.8.2
+    # via -r requirements.in
 pyparsing==2.4.7
     # via packaging
 pyyaml==5.4.1
@@ -72,6 +74,7 @@ typer==0.4.0
 typing-extensions==3.10.0.0
     # via
     #   huggingface-hub
+    #   pydantic
     #   torch
 urllib3==1.26.6
     # via requests
