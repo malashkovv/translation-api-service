@@ -29,11 +29,9 @@ ENV PYTHONPATH /usr/src/app
 
 WORKDIR /usr/src/app/
 
-COPY ./translation-api/requirements.txt ./requirements.txt
+COPY ./translation/requirements.txt ./requirements.txt
 RUN pip install -r ./requirements.txt
 
-COPY ./translation-api ./translation-api
+COPY ./translation ./translation
 
-EXPOSE 80
-
-ENTRYPOINT ["/usr/src/app/translation-api/entrypoint.sh"]
+ENTRYPOINT ["/usr/src/app/translation/entrypoint.sh"]

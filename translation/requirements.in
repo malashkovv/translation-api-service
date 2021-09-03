@@ -1,7 +1,7 @@
 -f https://download.pytorch.org/whl/torch_stable.html
 
-fastapi
-uvicorn[standard]
-gunicorn
+typer
+kafka-python
+redis
 transformers[sentencepiece]
 torch==1.9.0+cu111
