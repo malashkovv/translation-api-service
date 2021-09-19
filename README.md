@@ -207,12 +207,10 @@ helm del translation
 helm del locust
 ```
 
-## Performance tests
-
-
 
 ## Useful links
 
+* [MLOps-Basics](https://github.com/graviraja/MLOps-Basics)
 * [How to 10x throughput when serving Hugging Face models without a GPU](https://www.comet.ml/site/how-to-10x-throughput-when-serving-hugging-face-models-without-a-gpu/)
 * [Apache Kafka producer and consumer with FastAPI and aiokafka](https://iwpnd.pw/articles/2020-03/apache-kafka-fastapi-geostream)
 * [Locust Helm Chart](https://github.com/deliveryhero/helm-charts/tree/master/stable/locust)
