@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from transformers import MarianMTModel, MarianTokenizer
 
 
 class Translator:
@@ -16,14 +16,14 @@ class Translator:
 
     @classmethod
     def initialize(cls, code: str, device_type="cpu"):
-        tokenizer = AutoTokenizer.from_pretrained(f"Helsinki-NLP/opus-mt-{code}")
-        model = AutoModelForSeq2SeqLM.from_pretrained(
+        tokenizer = MarianTokenizer.from_pretrained(f"Helsinki-NLP/opus-mt-{code}")
+        model = MarianMTModel.from_pretrained(
             f"Helsinki-NLP/opus-mt-{code}", torchscript=True
         )
         return cls(tokenizer, model, device_type)
 
     def translate(self, texts):
-        with torch.no_grad():
+        with torch.inference_mode():
             tokenized_text_tensor = self.tokenizer(
                 texts, return_tensors="pt", padding="longest"
             )

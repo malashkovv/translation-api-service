@@ -13,20 +13,20 @@ app = typer.Typer()
 
 
 @app.command()
-def run(translation_code: str, ttl: int = 60 * 30, debug: bool = False):
+def run(ttl: int = 60 * 30, max_records: int = 5, debug: bool = False):
     if debug:
         logger.setLevel(logging.DEBUG)
 
-    logger.info(f"Queue: translation_{translation_code}.")
+    logger.info(f"Queue: translation_{settings.translation_code}.")
     translator = Translator.initialize(
-        code=translation_code, device_type=settings.torch_device
+        code=settings.translation_code, device_type=settings.torch_device
     )
-    logger.info(f"Model {translation_code} is initialized.")
+    logger.info(f"Model {settings.translation_code} is initialized.")
     queue = Queue.initialize(
-        urls=settings.kafka_urls, topic=f"translation_{translation_code}"
+        urls=settings.kafka_urls, topic=f"translation_{settings.translation_code}"
     )
     cache = Cache.initialize(url=settings.redis_url, ttl=ttl)
-    run_inference(translator, queue, cache)
+    run_inference(translator, queue, cache, max_records=max_records)
 
 
 if __name__ == "__main__":

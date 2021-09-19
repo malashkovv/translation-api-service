@@ -34,4 +34,9 @@ RUN pip install -r ./requirements.txt
 
 COPY ./translation ./translation
 
+ARG TRANSLATION_CODE=en-ru
+
+# Pre-download model
+RUN python -c "from translation.model import Translator; Translator.initialize(code='${TRANSLATION_CODE}')"
+
 ENTRYPOINT ["/usr/src/app/translation/entrypoint.sh"]

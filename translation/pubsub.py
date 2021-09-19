@@ -14,8 +14,8 @@ class Queue:
         )
         return cls(kafka)
 
-    def pull(self):
+    def pull(self, timeout_ms=0, max_records=10):
         while True:
-            package = self.kafka.poll(timeout_ms=200, max_records=25)
+            package = self.kafka.poll(timeout_ms=timeout_ms, max_records=max_records)
             for topic_partition, records in package.items():
                 yield [json.loads(record.value.decode("utf-8")) for record in records]

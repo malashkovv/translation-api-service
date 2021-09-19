@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from functools import partial
 
 import backoff
 from fastapi import APIRouter
@@ -20,6 +21,8 @@ class TranslationRequest(BaseModel):
     def check_source_language(cls, v, values):
         if v in ["en", "de", "ru"]:
             return v
+        elif v == values["destination_language"]:
+            raise ValueError("Source language is the same as destination!")
         else:
             raise ValueError("Unsupported source language!")
 
@@ -27,6 +30,8 @@ class TranslationRequest(BaseModel):
     def check_destination_language(cls, v, values):
         if v in ["en", "de", "ru"]:
             return v
+        elif v == values["source_language"]:
+            raise ValueError("Source language is the same as destination!")
         else:
             raise ValueError("Unsupported destination language!")
 
@@ -45,7 +50,7 @@ class NoRecordException(RuntimeError):
     pass
 
 
-@backoff.on_exception(backoff.expo, NoRecordException)
+@backoff.on_exception(partial(backoff.expo, factor=0.05), NoRecordException)
 async def poll_result(record_id):
     record = await cache.get(f"translation_{record_id}")
     if record is not None:

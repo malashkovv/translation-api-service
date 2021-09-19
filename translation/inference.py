@@ -6,8 +6,8 @@ from translation.model import Translator
 from translation.pubsub import Queue
 
 
-def run_inference(translator: Translator, queue: Queue, cache: Cache):
-    for message_batch in queue.pull():
+def run_inference(translator: Translator, queue: Queue, cache: Cache, max_records=10):
+    for message_batch in queue.pull(max_records=max_records):
         logger.info(f"Received {len(message_batch)} records.")
         start_time = timer()
         translated_texts = translator.translate(
