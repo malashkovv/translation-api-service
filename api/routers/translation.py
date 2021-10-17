@@ -49,6 +49,11 @@ async def poll_translation(record_id) -> TranslationRecordModel:
 async def translate_action(
     translation_submit: TranslationRequestModel
 ) -> TranslationResponseModel:
+    """Submits a translation to queue and cache, but waits for the result. Sync API.
+
+    :param translation_submit: Text and language codes.
+    :return: Translation response model with translated text.
+    """
     record = await submit_translation(translation_submit)
     translated_record = await poll_translation(record.id)
     return TranslationResponseModel(
@@ -65,6 +70,11 @@ async def translate_action(
 async def translation_create(
     translation_submit: TranslationRequestModel
 ) -> TranslationResponseModel:
+    """Submits a translation to queue and creates cache record with empty data.
+
+    :param translation_submit: Text and language codes.
+    :return: Translation response model without translated text.
+    """
     record = await submit_translation(translation_submit)
     return TranslationResponseModel(
         id=record.id,
@@ -77,6 +87,11 @@ async def translation_create(
 
 @router.get("/translation/{translation_id}", response_model=TranslationResponseModel)
 async def translate_retrieve(translation_id: str) -> TranslationResponseModel:
+    """Gets a translation submission.
+
+    :param translation_id: UUID for translation submission.
+    :return: Translation response model with translated text.
+    """
     record = await get_translation(translation_id)
     if record is None:
         raise HTTPException(status_code=404, detail="Translation submission not found.")
