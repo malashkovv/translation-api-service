@@ -23,7 +23,7 @@ def run(ttl: int = 60 * 30, max_records: int = 5, debug: bool = False):
     )
     logger.info(f"Model {settings.translation_code} is initialized.")
     queue = Queue.initialize(
-        urls=settings.kafka_urls, topic=f"translation_{settings.translation_code}"
+        urls=settings.kafka_urls, topic=f"translation.{settings.translation_code}"
     )
     cache = Cache.initialize(url=settings.redis_url, ttl=ttl)
     run_inference(translator, queue, cache, max_records=max_records)

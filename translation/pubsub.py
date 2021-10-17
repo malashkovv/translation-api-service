@@ -1,5 +1,3 @@
-import json
-
 from kafka import KafkaConsumer
 
 
@@ -18,4 +16,4 @@ class Queue:
         while True:
             package = self.kafka.poll(timeout_ms=timeout_ms, max_records=max_records)
             for topic_partition, records in package.items():
-                yield [json.loads(record.value.decode("utf-8")) for record in records]
+                yield [record.value.decode("utf-8") for record in records]

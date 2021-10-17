@@ -1,4 +1,3 @@
-import json
 from typing import Optional
 
 import aioredis
@@ -13,18 +12,18 @@ class Cache:
         self.url = url
         self.redis_cache: Optional[Redis] = None
 
-    async def start(self,):
+    async def start(self):
         self.redis_cache = await aioredis.from_url(self.url, db=0, encoding="utf-8")
 
     async def keys(self, pattern):
         return await self.redis_cache.keys(pattern)
 
     async def set(self, key, value):
-        return await self.redis_cache.set(key, json.loads(value), ex=self.ttl)
+        return await self.redis_cache.set(key, value, ex=self.ttl)
 
     async def get(self, key):
         value = await self.redis_cache.get(key)
-        return json.loads(value) if value else None
+        return value
 
     async def stop(self):
         if self.redis_cache is not None:

@@ -1,16 +1,14 @@
 import asyncio
-import json
-from typing import Optional
+from typing import Iterable, Optional
 
 from aiokafka import AIOKafkaProducer
-from pydantic import BaseModel
 
 from api.config import settings
 
 
 class Queue:
-    def __init__(self, urls):
-        self.urls = urls
+    def __init__(self, urls: Iterable[str]):
+        self.urls: Iterable[str] = urls
         self.kafka_producer: Optional[AIOKafkaProducer] = None
 
     async def start(self):
@@ -20,10 +18,8 @@ class Queue:
         )
         await self.kafka_producer.start()
 
-    async def publish(self, topic: str, value: BaseModel):
-        return await self.kafka_producer.send(
-            topic, json.dumps(value.dict()).encode("utf-8")
-        )
+    async def publish(self, topic: str, value: str):
+        await self.kafka_producer.send(topic, value.encode("utf-8"))
 
     async def stop(self):
         if self.kafka_producer is not None:

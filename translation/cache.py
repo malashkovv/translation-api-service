@@ -1,5 +1,3 @@
-import json
-
 from redis import Redis
 
 
@@ -12,8 +10,8 @@ class Cache:
     def initialize(cls, url: str, ttl: int):
         return cls(Redis.from_url(url, db=0, encoding="utf-8"), ttl=ttl)
 
-    def set(self, key, value):
-        return self.redis_cache.set(key, json.dumps(value), ex=self.ttl)
+    def set(self, key: str, value: str):
+        return self.redis_cache.set(key, value, ex=self.ttl)
 
-    def get(self, key):
-        return json.loads(self.redis_cache.get(key))
+    def get(self, key: str):
+        return self.redis_cache.get(key)
