@@ -9,12 +9,36 @@ In order to bring up the service locally, run build command
 docker-compose build
 ```
 
-Create API service
+For local setup, "en-ru" model is used.
+
+Create kafka and redis services with
 ```bash
-docker-compose up -d api
+docker-compose up -d kafka_1 kafka_2 zookeeper redis
 ```
 
-App will be available at [localhost:8080](localhost:8080)
+If topic for "en-ru" is not created, run
+```bash
+docker-compose exec kafka_1 kafka-topics.sh \
+  --create --zookeeper zookeeper:2181 \
+  --replication-factor 1 --partitions 4 \
+  --topic translation.en-ru
+```
+
+Create API service with translation backend
+```bash
+docker-compose up -d --build --scale translation=2 translation api
+```
+
+It will create 2 models and one API service.
+
+API swagger is avaialable at [localhost:8080/docs](localhost:8080/docs).
+
+For performance testing, run
+```bash
+docker-compose up -d --scale locust-worker=8 api locust-master locust-worker
+```
+
+It will create locust server with 8 workers. Available at [localhost:8089](localhost:8089).
 
 ## Kubernetes setup
 
