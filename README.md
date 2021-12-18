@@ -40,6 +40,8 @@ docker-compose up -d --scale locust-worker=8 api locust-master locust-worker
 
 It will create locust server with 8 workers. Available at [localhost:8089](localhost:8089).
 
+It sends quotes from this [dataset](https://www.kaggle.com/akmittal/quotes-dataset) to the API service.
+
 ## Kubernetes setup
 
 ### EKS
