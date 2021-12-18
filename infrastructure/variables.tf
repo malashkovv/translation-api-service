@@ -1,24 +1,24 @@
 variable "cluster_name" {
   description = "Name of the cluster"
-  type = "string"
+  type = string
 }
 
 variable "aws_region" {
-  type = "string"
+  type = string
 }
 
 variable "worker_spot_price" {
-  type = "string"
+  type = string
 }
 
 variable "worker_type" {
-  type = "string"
+  type = string
 }
 
 variable "worker_cluster_desired_capacity" {
-  type = "string"
+  type = string
 }
 
 variable "worker_cluster_max_size" {
-  type = "string"
+  type = string
 }

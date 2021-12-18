@@ -4,7 +4,7 @@ provider "aws" {
 
 module "vpc-translation-api" {
   source               = "terraform-aws-modules/vpc/aws"
-  version              = "2.6.0"
+  version              = "3.6.0"
   name                 = "${var.cluster_name}-vpc"
   cidr                 = "10.0.0.0/16"
   azs                  = ["${var.aws_region}a", "${var.aws_region}b", "${var.aws_region}c"]
@@ -23,7 +23,9 @@ resource "aws_iam_role_policy_attachment" "worker-policy-attachment-AWSXRayDaemo
 
 module "eks-translation-api" {
   source                      = "terraform-aws-modules/eks/aws"
+  version                     = "17.4.0"
   cluster_name                = var.cluster_name
+  cluster_version             = "1.21"
   subnets                     = module.vpc-translation-api.public_subnets
   vpc_id                      = module.vpc-translation-api.vpc_id
   manage_aws_auth             = true

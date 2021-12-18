@@ -1,0 +1,8 @@
+-f https://download.pytorch.org/whl/torch_stable.html
+
+typer
+pydantic
+kafka-python
+redis
+transformers[sentencepiece]
+torch==1.9.0+cu111

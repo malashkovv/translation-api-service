@@ -1,9 +1,14 @@
-replicaCount: 2
+workers:
+  replicaCount:
+    max: 10
+    min: 2
+  gpu: 1
 
 image:
-  repository: vmalashkov/translation-api-service
+  repository: vmalashkov/translation-api
   tag: v0.2.2
   pullPolicy: IfNotPresent
 
 config:
-  xray: true
+  translationModelCode: en-nl
+  torchDevice: cpu

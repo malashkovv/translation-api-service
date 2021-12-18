@@ -1,26 +1,88 @@
-version: "3.4"
+version: "3.9"
 services:
   api:
     build:
       context: .
-      dockerfile: ./translation-api/Dockerfile
-    ports:
-      - 8080:8080
+      dockerfile: api/Dockerfile
+    command: ["server"]
     environment:
-      - XRAY=true
-  xray-aws-xray:
-    image: namshi/aws-xray
+      - KAFKA_URLS=kafka_1:9092,kafka_2:9092
+      - REDIS_URL=redis://redis:6379
     ports:
-      - 2000:2000/udp
-    environment:
-      - AWS_REGION=eu-central-1
-    volumes:
-      - ~/.aws/:/root/.aws/:ro
-  perf:
+      - 8080:80
+  translation:
     build:
       context: .
-      dockerfile: ./translation-api-perf/Dockerfile
-    ports:
-      - 8089:8089
+      dockerfile: translation/Dockerfile
+      args:
+        - TRANSLATION_CODE=en-ru
+    command: ["server"]
     environment:
-      - TARGET_HOST=http://api:8080
+      - TORCH_DEVICE=cuda:0
+      - TRANSLATION_CODE=en-ru
+      - KAFKA_URLS=kafka_1:9092,kafka_2:9092
+      - REDIS_URL=redis://redis:6379
+    deploy:
+      replicas: 4
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+  zookeeper:
+    image: bitnami/zookeeper:3
+    ports:
+      - '2181:2181'
+    volumes:
+      - zookeeper_data:/bitnami
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka_1:
+    image: bitnami/kafka:2
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_data_1:/bitnami
+    ports:
+      - '9092:9092'
+  kafka_2:
+    image: bitnami/kafka:2
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_data_2:/bitnami
+    ports:
+      - '9093:9092'
+  redis:
+    image: redis:6.2
+    ports:
+      - '6379:6379'
+  locust-master:
+    build:
+      context: .
+      dockerfile: translation_perf/Dockerfile
+    ports:
+     - "8089:8089"
+    command: -f /usr/src/app/main.py --master -H http://api:80
+  locust-worker:
+    deploy:
+      replicas: 8
+    build:
+      context: .
+      dockerfile: translation_perf/Dockerfile
+    volumes:
+      - ./:/mnt/locust
+    command: -f /usr/src/app/main.py --worker --master-host locust-master
+volumes:
+  kafka_data_1:
+    driver: local
+  kafka_data_2:
+    driver: local
+  zookeeper_data:
+    driver: local
